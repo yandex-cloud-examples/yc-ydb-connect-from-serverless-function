@@ -1,50 +1,69 @@
-# Авторизация в Yandex database c помощью сервиса метаданных.
+# Подключение к базе данных Yandex Managed Service for YDB из функции Yandex Cloud Functions на Node.js
 
-# Документация
-[Авторизация в YDB CLI](https://cloud.yandex.ru/docs/ydb/concepts/connect)
+Пример по развертыванию функции [Yandex Cloud Functions](https://cloud.yandex.ru/docs/functions/) на Node.js и [подключению](https://cloud.yandex.ru/docs/ydb/concepts/connect) к базе данных [Yandex Managed Service for YDB](https://cloud.yandex.ru/docs/ydb/) с помощью сервиса метаданных.
 
-## Где работает сервис метаданных
-Сервис метаданных работает на виртуальных машинах внутри Yandex compute cloud, а также в serverless функциях Yandex
+Сервис метаданных работает на виртуальных машинах [Yandex Compute Cloud](https://cloud.yandex.ru/docs/compute/), а также функциях Yandex Cloud Functions.
 
-## Данный пример представляет собой отдельный проект по развертыванию NodeJS serverless функции
+## Перед началом работы
 
-Для запуска Вам необходимо:
+1. Клонируйте этот репозиторий.
+1. Если у вас еще нет интерфейса командной строки Yandex Cloud, [установите и инициализируйте его](https://yandex.cloud/ru/docs/cli/quickstart#install).
+1. [Создайте](https://yandex.cloud/ru/docs/iam/operations/sa/create) сервисный аккаунт и [назначьте](https://yandex.cloud/ru/docs/iam/operations/sa/assign-role-for-sa) ему роль `admin`.
+1. [Создайте](https://cloud.yandex.ru/docs/iam/operations/authorized-key/create) авторизованный ключ для сервисного аккаунта:
 
-1. клонировать репозитарий
-2. установить зависимости командой npm i
-3. внесите Ваши данные в .env (
- 
-   ENDPOINT=grpcs://ydb.serverless.yandexcloud.net:2135
-   возьмите из окна свойств Вашей базы данных
-   DATABASE=/ru-central1/b1gu1b9o1gq4ptfngmvq/etnj5859gt3uqe803bls
-   FUNCTION_NAME=func-test-ydb
-   перейдите в Ваше облако и вставьте id folder
-   FOLDER_ID=b1ga2r8ll8h12977etbg
-   создайте сервисный account, дайте ему права admin   SERVICE_ACCOUNT_ID=ajeb5ab25igcdquppgpu
-   имя файла в котором записаны секретные ключи 
-   SA_KEY_FILE=service_account_key_file.json
+    ```bash
+    yc iam key create --service-account-name <имя_сервисного_аккаунта> -o service_account_key_file.json
+    ```
 
- Эти данные Вы можете взять из окна свойств Вашей базы данных
-
-![картинка с примером данных из asserts](./asserts/2021-12-09_16-14-46.png)
-
-Для создания авторизованного ключа для сервисного аккаунта воспользуйтесь документацией: [Ссылка](https://cloud.yandex.ru/docs/iam/operations/authorized-key/create)
-
-Настройте профиль yc и запустите команду:
-```
-yc iam key create --service-account-name my-robot -o service_account_key_file.json
-```
-
-my-robot - это имя Вашего сервисного аккаунта, который должен иметь полный доступ к базе.
-
-Файл service_account_key_file.json должен лежать в корне проекта.
+   Где: 
+   * `--service-account-name` — имя сервисного аккаунта, созданного ранее.
 
 
-4. следуйте инструкциям в deploy/deploy.md для deploy функции
-5. вызовите функцию передав ей параметр api_key - имя таблицы, которая будет создана
+## Запуск примера
 
-Обратите внимание что данный шаблон подразумевает отладку кода на локальном компьютере. Для этого для старта программы используйте файл index-local.ts и проведите отладку Вашего кода.
+1. Перейдите в терминале в папку проекта и установите зависимости командой:
+    ```bash
+    npm i
+    ```
+1. Внесите пользовательские значения данные в файле `.env`.
 
 
-Пример на python
-https://cloud.yandex.ru/docs/functions/solutions/connect-to-ydb#create-function
+1. Для создания новую публичной функции выполните: 
+    ```bash
+    ./deploy/create-func.sh
+    ```
+1. Запустите установку зависимостей:
+    ```bash
+    npm install
+    ```
+
+1. Создайте экземпляра функции:
+    ```bash
+    ./deploy/create-func-ver.sh
+    ```
+
+    Скрипт разделен на две части потому что Вам потребуется один раз создать функцию и по мере разработки запускать создание версий функции.
+
+    Обратите внимание, что при создании версии функции автоматически создаются и заполняются необходимые для работы функции env переменные.
+
+1. Вызовите функцию передав ей параметр `api_key`— имя создаваемой таблицы.
+
+
+Данный шаблон подразумевает отладку кода на локальном компьютере. Для этого запускайте программу с помощью файла `index-local.ts` и проводите отладку вашего кода.
+
+
+## Внимание для пользователей Windows!
+
+Скрипты написаны под lunix bash. Под windows их можно запустить из среды wsl (встроенная в windows виртуальная машина ubuntu).
+
+Также необходимо проконтролировать, что при импорте из github в файлах `*.sh` перевод каретки установлен только в `LF` - иначе скрипты выдадут ошибку.
+
+В некоторых случаях на скрипты необходимо дать права на исполнение.
+
+Для чтения информации из env файлов на windows необходим пакет dotenv.
+
+
+## См. также
+
+* [Подключение к базе данных Yandex Managed Service for YDB из функции Cloud Functions на Python](https://cloud.yandex.ru/docs/functions/solutions/connect-to-ydb#create-function)
+
