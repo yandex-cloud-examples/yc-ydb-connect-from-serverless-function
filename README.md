@@ -2,7 +2,7 @@
 
 Руководство предназначено для пользователей Linux. На Windows пройти руководство можно в среде [WSL](https://learn.microsoft.com/ru-ru/windows/wsl/about).
 
-Вы создадите [функцию](https://yandex.cloud/ru/docs/functions/concepts/function) с [приложением на Node.js](https://ydb.tech/docs/ru/dev/example-app/example-nodejs), которое выполняет простой запрос к базе данных [YDB](https://ydb.tech). Развертывание приложения осуществляется с помощью Bash-скриптов, для компиляции используется команда tcs.
+Вы создадите [функцию](https://yandex.cloud/ru/docs/functions/concepts/function) с [приложением на Node.js](https://ydb.tech/docs/ru/dev/example-app/example-nodejs), которое выполняет простой запрос к базе данных [YDB](https://ydb.tech). Развертывание приложения осуществляется с помощью Bash-скриптов, для компиляции используется команда `tcs`.
 
 Функция с привязанным [сервисным аккаунтом](https://yandex.cloud/ru/docs/iam/concepts/users/service-accounts) авторизуется в YDB через сервис метаданных.
 
